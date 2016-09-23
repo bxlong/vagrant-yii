@@ -1,0 +1,64 @@
+######
+
+######
+# Configuration steps from bare build:
+sudo apt-get update
+
+# Setup basic LAMP environment
+# --OR--
+# Just run 'tasksel install lamp-server'
+sudo apt-get install mysql-server
+sudo apt-get install apache2-bin
+
+sudo apt-get install php5
+sudo apt-get install php5-mysql
+
+# Configure composer
+# McKee, JB (2016-05-03). Yii 2 Quick Start Guide (Kindle Locations 124-125).  . Kindle Edition. 
+
+curl -s http://getcomposer.org/installer | php && sudo mv composer.phar /usr/local/bin/composer
+
+composer global require "fxp/composer-asset-plugin:^1.2.0" 
+composer create-project --prefer-dist yiisoft/yii2-app-advanced /var/www/yii # Had to use sudo, which generated warnings on running composer as root
+#####
+# Failed due to auth failure with github. Needed oath token:
+# 95d3e96f827c6ff78da4b7649d04d094d2d58f03
+
+#####
+# Setup mysql database
+# file:/var/www/yii/config/main-local.php
+#####
+# user: yiiuser
+# pw: yiiPa55word!
+# db: yiidb
+CREATE DATABASE yiidb;
+CREATE USER yiiuser IDENTIFIED BY 'yiiPa55word!';
+USE yiidb;
+GRANT ALL ON yiidb TO yiiuser@localhost;
+
+
+#####
+# Setup Apache vHost
+# /etc/apache2/sites-available/yii-basic.conf
+ln -s /etc/apache2/sites-available/yii.conf /etc/apache2/sites-enabled/yii.conf
+#####
+Listen 8080
+<VirtualHost *:8080>
+  DocumentRoot "/var/www/yii/framework/web"
+  ServerName yii
+  <Directory "var/www/yii/framework/web">
+    AllowOverride All
+  </Directory>
+</VirtualHost>
+# ln -s /etc/apache2/sites-available/yii.conf /etc/apache2/sites-enabled/yii.conf
+#####
+# Enable mod_rewrite
+#####
+sudo a2enmod rewrite
+sudo service apache2 restart
+
+
+#####
+# Configure yii basic
+#####
+# /var/www/yii-basic/config/db.conf
