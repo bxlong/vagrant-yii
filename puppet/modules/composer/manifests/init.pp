@@ -13,7 +13,7 @@ class composer::install {
   }->
 
   exec { 'oauth_token composer':
-    command => 'composer config --global github-oauth.github.com 95d3e96f827c6ff78da4b7649d04d094d2d58f03',
+    command => 'composer config --global github-oauth.github.com <Enter Your Token Here>',
     environment => ["COMPOSER_HOME=/usr/local/bin"],
   }
 
